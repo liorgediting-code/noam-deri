@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>שאלון קצר | דור העתיד פרימיום</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #D4A017;
+      --accent-light: #F5C842;
+      --dark: #0A0A0B;
+      --card: #111113;
+      --border: #1E1E22;
+      --text: #FFFFFF;
+      --muted: #9CA3AF;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Heebo', sans-serif;
+      font-size: 17px;
+      line-height: 1.7;
+      direction: rtl;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .gold-text {
+      background: linear-gradient(135deg, #F5C842 0%, #D4A017 60%, #F5C842 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .wrap {
+      width: 100%; max-width: 560px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: 16px;
+      justify-content: center; margin-bottom: 32px;
+    }
+
+    /* Progress */
+    .progress-track {
+      height: 4px; background: var(--border); border-radius: 100px;
+      margin-bottom: 32px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #D4A017, #F5C842);
+      border-radius: 100px;
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--muted); margin-bottom: 10px;
+    }
+
+    /* Step card */
+    .step-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px 32px;
+      animation: slideIn 0.35s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-num {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+    }
+    .step-question {
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      font-weight: 900; line-height: 1.3; margin-bottom: 28px; color: #fff;
+    }
+
+    /* Radio options */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option {
+      display: flex; align-items: center; gap: 14px;
+      background: #0E0E12; border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      font-size: 16px; font-weight: 400;
+    }
+    .option:hover { border-color: rgba(212,160,23,0.4); background: rgba(212,160,23,0.04); }
+    .option.selected {
+      border-color: var(--accent); background: rgba(212,160,23,0.08);
+      font-weight: 700;
+    }
+    .option-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s ease;
+    }
+    .option.selected .option-dot {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .option.selected .option-dot::after {
+      content: ''; width: 8px; height: 8px;
+      background: #0A0A0B; border-radius: 50%;
+    }
+
+    /* Text input */
+    textarea, input[type="text"] {
+      width: 100%; background: #0E0E12;
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 20px; color: #fff; font-family: 'Heebo', sans-serif;
+      font-size: 16px; font-weight: 300; resize: none; outline: none;
+      transition: border-color 0.2s ease;
+      direction: rtl;
+    }
+    textarea:focus, input[type="text"]:focus { border-color: rgba(212,160,23,0.5); }
+    textarea { min-height: 100px; }
+
+    /* Buttons */
+    .btn-next {
+      width: 100%; margin-top: 24px;
+      background: linear-gradient(135deg, #D4A017, #F5C842);
+      color: #0A0A0B; font-weight: 900; font-size: 17px;
+      padding: 16px 28px; border-radius: 12px; cursor: pointer;
+      border: none; transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-family: 'Heebo', sans-serif;
+    }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(212,160,23,0.4); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-back {
+      background: none; border: none; color: var(--muted);
+      font-size: 14px; cursor: pointer; padding: 10px 0;
+      font-family: 'Heebo', sans-serif; display: block; margin-top: 10px;
+      text-align: center; width: 100%;
+    }
+    .btn-back:hover { color: #fff; }
+
+    /* No-commit note */
+    .no-commit-note {
+      text-align: center; font-size: 13px; color: #555; margin-top: 20px;
+    }
+
+    /* Success screen */
+    .success-screen {
+      text-align: center; display: none;
+      animation: slideIn 0.4s ease;
+    }
+    .success-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(212,160,23,0.1); border: 2px solid rgba(212,160,23,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; margin: 0 auto 20px;
+    }
+
+    @media (max-width: 480px) {
+      .step-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Logo -->
+  <div class="logo">
+    <img src="logo.png" alt="דור העתיד פרימיום" height="60" style="object-fit:contain;">
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-label">
+    <span id="step-label">שאלה 1 מתוך 5</span>
+    <span id="step-pct">20%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width:20%"></div>
+  </div>
+
+  <!-- Questions -->
+  <div id="quiz-area">
+
+    <!-- Step 1 -->
+    <div class="step-card" id="step-1">
+      <p class="step-num">שאלה 1 מתוך 5</p>
+      <h2 class="step-question">אתה מגדיר את עצמך כאדם שאוהב ללמוד ולהתפתח?</h2>
+      <div class="options" id="q1-options">
+        <div class="option" data-val="כן, בהחלט" onclick="selectOption(this,'q1')">
+          <div class="option-dot"></div>
+          <span>כן, בהחלט</span>
+        </div>
+        <div class="option" data-val="לפעמים" onclick="selectOption(this,'q1')">
+          <div class="option-dot"></div>
+          <span>לפעמים, תלוי בנושא</span>
+        </div>
+        <div class="option" data-val="לא ממש" onclick="selectOption(this,'q1')">
+          <div class="option-dot"></div>
+          <span>לא ממש</span>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-1" disabled onclick="nextStep(2)">הבא &rarr;</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-card" id="step-2" style="display:none;">
+      <p class="step-num">שאלה 2 מתוך 5</p>
+      <h2 class="step-question">מה אתה עושה כשאתה לא מבין משהו?</h2>
+      <div class="options" id="q2-options">
+        <div class="option" data-val="מחפש ביוטיוב" onclick="selectOption(this,'q2')">
+          <div class="option-dot"></div>
+          <span>מחפש ביוטיוב</span>
+        </div>
+        <div class="option" data-val="שואל מישהו שיודע" onclick="selectOption(this,'q2')">
+          <div class="option-dot"></div>
+          <span>שואל מישהו שיודע</span>
+        </div>
+        <div class="option" data-val="משאיר את זה" onclick="selectOption(this,'q2')">
+          <div class="option-dot"></div>
+          <span>משאיר את זה ועובר הלאה</span>
+        </div>
+        <div class="option" data-val="נמאס לי לחפש לבד" onclick="selectOption(this,'q2')">
+          <div class="option-dot"></div>
+          <span>נמאס לי לחפש לבד, אני רוצה מישהו שיסביר לי</span>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-2" disabled onclick="nextStep(3)">הבא &rarr;</button>
+      <button class="btn-back" onclick="prevStep(1)">חזרה</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-card" id="step-3" style="display:none;">
+      <p class="step-num">שאלה 3 מתוך 5</p>
+      <h2 class="step-question">במשפט אחד: מה המטרה שלך?</h2>
+      <textarea id="q3-input" placeholder="לדוגמה: אני רוצה למלא את היומן שלי ולהגדיל את ההכנסה" oninput="checkText('q3-input','btn-3')"></textarea>
+      <button class="btn-next" id="btn-3" disabled onclick="nextStep(4)">הבא &rarr;</button>
+      <button class="btn-back" onclick="prevStep(2)">חזרה</button>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-card" id="step-4" style="display:none;">
+      <p class="step-num">שאלה 4 מתוך 5</p>
+      <h2 class="step-question">איך שמעת על דור העתיד פרימיום?</h2>
+      <div class="options" id="q4-options">
+        <div class="option" data-val="חבר שסיפר לי" onclick="selectOption(this,'q4')">
+          <div class="option-dot"></div>
+          <span>חבר סיפר לי</span>
+        </div>
+        <div class="option" data-val="אינסטגרם" onclick="selectOption(this,'q4')">
+          <div class="option-dot"></div>
+          <span>אינסטגרם</span>
+        </div>
+        <div class="option" data-val="טיקטוק" onclick="selectOption(this,'q4')">
+          <div class="option-dot"></div>
+          <span>טיקטוק</span>
+        </div>
+        <div class="option" data-val="גוגל" onclick="selectOption(this,'q4')">
+          <div class="option-dot"></div>
+          <span>גוגל</span>
+        </div>
+        <div class="option" data-val="אחר" onclick="selectOption(this,'q4')">
+          <div class="option-dot"></div>
+          <span>אחר</span>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-4" disabled onclick="nextStep(5)">הבא &rarr;</button>
+      <button class="btn-back" onclick="prevStep(3)">חזרה</button>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-card" id="step-5" style="display:none;">
+      <p class="step-num">שאלה 5 מתוך 5</p>
+      <h2 class="step-question">כמה דחוף לך שיחזרו אליך?</h2>
+      <div class="options" id="q5-options">
+        <div class="option" data-val="מאוד דחוף, אני רוצה להתחיל עכשיו" onclick="selectOption(this,'q5')">
+          <div class="option-dot"></div>
+          <span>🔥 מאוד דחוף, אני רוצה להתחיל עכשיו</span>
+        </div>
+        <div class="option" data-val="תוך כמה ימים" onclick="selectOption(this,'q5')">
+          <div class="option-dot"></div>
+          <span>תוך כמה ימים</span>
+        </div>
+        <div class="option" data-val="בשבוע הקרוב" onclick="selectOption(this,'q5')">
+          <div class="option-dot"></div>
+          <span>בשבוע הקרוב</span>
+        </div>
+        <div class="option" data-val="לא ממש דחוף" onclick="selectOption(this,'q5')">
+          <div class="option-dot"></div>
+          <span>לא ממש דחוף, אני רק בודק</span>
+        </div>
+      </div>
+      <button class="btn-next" id="btn-5" disabled onclick="submitQuiz()">שלח ועבור לוואטסאפ &rarr;</button>
+      <button class="btn-back" onclick="prevStep(4)">חזרה</button>
+    </div>
+
+  </div>
+
+  <!-- Success / redirect screen -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">✅</div>
+    <h2 style="font-size:1.6rem;font-weight:900;margin-bottom:12px;">תודה! מעבירים אותך לוואטסאפ</h2>
+    <p style="color:var(--muted);margin-bottom:28px;">השאלון נשלח. נועם יחזור אליך בהקדם.</p>
+    <a id="wa-link" href="#" target="_blank" rel="noopener"
+      style="display:inline-block;background:linear-gradient(135deg,#D4A017,#F5C842);color:#0A0A0B;font-weight:900;font-size:17px;padding:16px 32px;border-radius:12px;text-decoration:none;">
+      פתח וואטסאפ &rarr;
+    </a>
+    <p style="font-size:13px;color:#555;margin-top:14px;">לא נפתח אוטומטית? לחץ על הכפתור.</p>
+  </div>
+
+  <p class="no-commit-note">✓ ללא התחייבות · ביטול בכל עת</p>
+
+</div>
+
+<script>
+  const answers = { q1: '', q2: '', q3: '', q4: '', q5: '' };
+  const TOTAL = 5;
+
+  function updateProgress(step) {
+    const pct = Math.round((step / TOTAL) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('step-label').textContent = 'שאלה ' + step + ' מתוך ' + TOTAL;
+    document.getElementById('step-pct').textContent = pct + '%';
+  }
+
+  function selectOption(el, key) {
+    const group = el.parentElement;
+    group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[key] = el.dataset.val;
+    const btnId = 'btn-' + key.replace('q','');
+    document.getElementById(btnId).disabled = false;
+  }
+
+  function checkText(inputId, btnId) {
+    const val = document.getElementById(inputId).value.trim();
+    answers.q3 = val;
+    document.getElementById(btnId).disabled = val.length < 3;
+  }
+
+  function nextStep(to) {
+    const from = to - 1;
+    document.getElementById('step-' + from).style.display = 'none';
+    document.getElementById('step-' + to).style.display = 'block';
+    updateProgress(to);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevStep(to) {
+    const from = to + 1;
+    document.getElementById('step-' + from).style.display = 'none';
+    document.getElementById('step-' + to).style.display = 'block';
+    updateProgress(to);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitQuiz() {
+    const q3val = document.getElementById('q3-input').value.trim() || answers.q3;
+
+    const msg = [
+      'שלום! מילאתי את השאלון באתר דור העתיד פרימיום:',
+      '',
+      '1. אוהב ללמוד ולהתפתח? ' + answers.q1,
+      '2. מה אני עושה כשאני לא מבין? ' + answers.q2,
+      '3. המטרה שלי: ' + q3val,
+      '4. איך שמעתי עליכם: ' + answers.q4,
+      '5. דחיפות: ' + answers.q5,
+    ].join('\n');
+
+    const encoded = encodeURIComponent(msg);
+    const waUrl = 'https://wa.me/972539344030?text=' + encoded;
+
+    document.getElementById('quiz-area').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+    document.getElementById('wa-link').href = waUrl;
+
+    setTimeout(() => { window.open(waUrl, '_blank'); }, 600);
+  }
+
+  updateProgress(1);
+</script>
+
+</body>
+</html>
