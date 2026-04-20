@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>שאלון קצר | דור העתיד פרימיום</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -176,6 +179,8 @@
 
 <div class="wrap">
 
+  <!-- DEBUG: v3 -->
+
   <!-- Logo -->
   <div class="logo">
     <img src="logo.png" alt="דור העתיד פרימיום" height="60" style="object-fit:contain;">
@@ -301,8 +306,18 @@
           <span>לא ממש דחוף, אני רק בודק</span>
         </div>
       </div>
-      <button class="btn-next" id="btn-5" disabled onclick="submitQuiz()">שלח ועבור לוואטסאפ &rarr;</button>
+      <button class="btn-next" id="btn-5" disabled onclick="nextStep(6)">הבא &rarr;</button>
       <button class="btn-back" onclick="prevStep(4)">חזרה</button>
+    </div>
+
+    <!-- Step 6 – Contact details -->
+    <div class="step-card" id="step-6" style="display:none;">
+      <p class="step-num">פרטי התקשרות</p>
+      <h2 class="step-question">איך נחזור אליך?</h2>
+      <input type="text" id="contact-name" placeholder="שם מלא" oninput="checkContact()" style="width:100%;padding:14px 16px;border-radius:10px;border:1.5px solid var(--border);background:#18181b;color:var(--text);font-size:16px;font-family:inherit;margin-bottom:12px;" />
+      <input type="tel" id="contact-phone" placeholder="מספר טלפון" oninput="checkContact()" style="width:100%;padding:14px 16px;border-radius:10px;border:1.5px solid var(--border);background:#18181b;color:var(--text);font-size:16px;font-family:inherit;margin-bottom:12px;" dir="ltr" />
+      <button class="btn-next" id="btn-6" disabled onclick="submitQuiz()">שלח ועבור לוואטסאפ &rarr;</button>
+      <button class="btn-back" onclick="prevStep(5)">חזרה</button>
     </div>
 
   </div>
@@ -325,12 +340,13 @@
 
 <script>
   const answers = { q1: '', q2: '', q3: '', q4: '', q5: '' };
-  const TOTAL = 5;
+  const TOTAL = 6;
 
   function updateProgress(step) {
     const pct = Math.round((step / TOTAL) * 100);
     document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('step-label').textContent = 'שאלה ' + step + ' מתוך ' + TOTAL;
+    const label = step <= 5 ? 'שאלה ' + step + ' מתוך 5' : 'פרטי התקשרות';
+    document.getElementById('step-label').textContent = label;
     document.getElementById('step-pct').textContent = pct + '%';
   }
 
@@ -349,6 +365,12 @@
     document.getElementById(btnId).disabled = val.length < 3;
   }
 
+  function checkContact() {
+    const name = document.getElementById('contact-name').value.trim();
+    const phone = document.getElementById('contact-phone').value.trim();
+    document.getElementById('btn-6').disabled = name.length < 2 || phone.length < 7;
+  }
+
   function nextStep(to) {
     const from = to - 1;
     document.getElementById('step-' + from).style.display = 'none';
@@ -365,11 +387,47 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function submitQuiz() {
+  function sendWebhook(payload) {
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://hook.eu2.make.com/o527cm3idlg87k0wuxaosovoxix3vya7', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.timeout = 8000;
+      xhr.onload  = () => { console.log('Webhook sent, status:', xhr.status); resolve(true); };
+      xhr.onerror = () => { console.error('Webhook network error'); resolve(false); };
+      xhr.ontimeout = () => { console.error('Webhook timed out'); resolve(false); };
+      xhr.send(JSON.stringify(payload));
+    });
+  }
+
+  async function submitQuiz() {
+    const btn = document.getElementById('btn-6');
+    btn.disabled = true;
+    btn.textContent = 'שולח...';
+
     const q3val = document.getElementById('q3-input').value.trim() || answers.q3;
+    const name  = document.getElementById('contact-name').value.trim();
+    const phone = document.getElementById('contact-phone').value.trim();
+
+    const payload = {
+      name: name,
+      phone: phone,
+      loves_learning: answers.q1,
+      when_stuck: answers.q2,
+      goal: q3val,
+      source: answers.q4,
+      urgency: answers.q5,
+      timestamp: new Date().toISOString(),
+    };
+
+    alert('DEBUG - sending:\n' + JSON.stringify(payload, null, 2));
+    await sendWebhook(payload);
 
     const msg = [
       'שלום! מילאתי את השאלון באתר דור העתיד פרימיום:',
+      '',
+      'שם: ' + name,
+      'טלפון: ' + phone,
       '',
       '1. אוהב ללמוד ולהתפתח? ' + answers.q1,
       '2. מה אני עושה כשאני לא מבין? ' + answers.q2,
