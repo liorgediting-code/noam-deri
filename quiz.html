@@ -179,8 +179,6 @@
 
 <div class="wrap">
 
-  <!-- DEBUG: v3 -->
-
   <!-- Logo -->
   <div class="logo">
     <img src="logo.png" alt="דור העתיד פרימיום" height="60" style="object-fit:contain;">
@@ -420,7 +418,6 @@
       timestamp: new Date().toISOString(),
     };
 
-    alert('DEBUG - sending:\n' + JSON.stringify(payload, null, 2));
     await sendWebhook(payload);
 
     const msg = [
@@ -442,8 +439,7 @@
     document.getElementById('quiz-area').style.display = 'none';
     document.getElementById('success-screen').style.display = 'block';
     document.getElementById('wa-link').href = waUrl;
-
-    setTimeout(() => { window.open(waUrl, '_blank'); }, 600);
+    window.location.href = waUrl;
   }
 
   updateProgress(1);
